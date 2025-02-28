@@ -21,9 +21,9 @@
             placeholder="请输入姓名"
             :rules="[
               { required: true, message: '姓名不能为空' },
-              { validator: validateName, message: '姓名不能超过50字符' }
+              { validator: validateName, message: '姓名不能超过10字符' }
             ]"
-            maxlength="50"
+            maxlength="10"
             show-word-limit
           />
         </van-cell-group>
@@ -43,7 +43,7 @@
           />
         </van-cell-group>
   
-        <!-- 入校时间 -->
+         <!-- 入校时间 -->
         <van-cell-group inset>
           <van-field
             v-model="displayComeTime"
@@ -53,19 +53,18 @@
             :rules="comeTimeRules"
             readonly
             is-link
-            @click="showEntryPicker = true"
+            @click="showComePicker = true"
           />
-          <van-popup v-model:show="showEntryPicker" round position="bottom">
+          <van-popup v-model:show="showComePicker" position="bottom">
             <van-date-picker
-              v-model="comeDate"
               :min-date="minDate"
               :max-date="maxDate"
-              @confirm="handleComeConfirm"
-              @cancel="showEntryPicker = false"
+              @confirm="(v) => handleTimeConfirm(v, 'come')"
+              @cancel="showComePicker = false"
             />
           </van-popup>
         </van-cell-group>
-  
+
         <!-- 出校时间 -->
         <van-cell-group inset>
           <van-field
@@ -78,12 +77,11 @@
             is-link
             @click="showExitPicker = true"
           />
-          <van-popup v-model:show="showExitPicker" round position="bottom">
+          <van-popup v-model:show="showExitPicker" position="bottom">
             <van-date-picker
-              v-model="exitDate"
               :min-date="minDate"
               :max-date="maxDate"
-              @confirm="handleExitConfirm"
+              @confirm="(v) => handleTimeConfirm(v, 'exit')"
               @cancel="showExitPicker = false"
             />
           </van-popup>

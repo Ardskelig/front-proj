@@ -146,7 +146,7 @@
       
       if (isValid) {
         showToast({ message: '登录成功', icon: 'passed' })
-        router.push('/home')
+        router.push('/Notice')
       } else {
         showToast({ message: '身份凭证已过期', icon: 'clear' })
         did.value = ''

@@ -5,7 +5,6 @@ import LoginPage from '@/views/Login/LoginPage.vue'
 import StudentRegister from '@/views/Login/StudentRegister.vue'
 import VistorRegister from '@/views/Login/VistorRegister.vue'
 import ChooseSV from '@/views/Login/ChooseSV.vue'
-import TestVue from '@/views/Content/test.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -26,15 +25,30 @@ const router = createRouter({
       path:'/ChooseRegister',
       component:ChooseSV
     },
+
     {
+      path: '/detail/:queryId/:blogId',
+      name: 'BlogDetail',
+      component: () => import('@/views/DetailPage.vue'), // 动态导入
+      props: true // 自动将路由参数转为 props
+    },
+    {
+      
+      
       path:'/',
       component:LayoutContainer,
       name:'home',
-      redirect:'/login',
+      redirect:'/Notice',
       children:[
         {
-          path:'/content/test',
-          component:TestVue
+          path: 'Notice',
+          component: () => import('@/views/Notice.vue'),
+          meta: { tabIndex: 0 }
+        },
+        {
+          path: 'Wallet',
+          component: () => import('@/views/Wallet.vue'),
+          meta: { tabIndex: 0 }
         }
       ]
     }
