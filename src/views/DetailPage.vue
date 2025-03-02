@@ -175,10 +175,10 @@
           timeout: 8000
         }
       )
-      console.log()
+      console.log(response)
       if (response.data.code === 1) {
         detailData.value = response.data.data || {}
-        // queryContent.value=response.data.data.result
+        queryContent.value=response.data.data.result
         // console.log('问卷渲染数据',queryContent.value)
         // showPicker.value = new Array(queryContent.value.length).fill(false);
       } else {
