@@ -1,4 +1,5 @@
 <template>
+  <van-nav-bar title="通知" fixed="true" />
   <router-view v-slot="{ Component }">
     <transition name="slide-fade" mode="out-in">
       <component :is="Component" />
@@ -237,7 +238,6 @@ const handleClick = (item) => {
   line-height: 1.4;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
   overflow: hidden;
 }
 
@@ -310,4 +310,9 @@ const handleClick = (item) => {
   transform: translateX(20px);
   opacity: 0;
 }
+
+:root:root {
+  --van-nav-bar-background:#1A1A1A;
+}
+
 </style>

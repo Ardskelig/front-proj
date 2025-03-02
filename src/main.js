@@ -35,12 +35,14 @@ import {
 
   ImagePreview  // 特别注意：这个组件不需要注册，直接使用API
 } from 'vant'
+import { Cascader } from 'vant';
 import 'vant/lib/index.css';
 import ElementPlus from 'element-plus'
 import App from './App.vue'
 import router from './router'
+import { Calendar } from 'vant';
 import { initDB, initRootDID } from './db.js';
-
+import { Picker } from 'vant';
 const startApp = async () => {
   try {
     await initDB()
@@ -77,7 +79,7 @@ const startApp = async () => {
       Card
 
     ]
-
+    
     // 注册全局组件
     vantComponents.forEach(component => {
       app.use(component)
@@ -85,9 +87,11 @@ const startApp = async () => {
 
     // 其他插件
     app.use(createPinia())
+    app.use(Calendar);
     app.use(router)
     app.use(ElementPlus)
-    
+    app.use(Picker);
+    app.use(Cascader);   
     // 挂载ImagePreview到全局属性（可选）
     app.config.globalProperties.$imagePreview = ImagePreview
     

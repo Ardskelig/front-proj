@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import LayoutContainer from '@/views/LayoutContainer.vue'
+import TestVue from '@/views/Content/test.vue'
 import LoginPage from '@/views/Login/LoginPage.vue'
 import StudentRegister from '@/views/Login/StudentRegister.vue'
 import VistorRegister from '@/views/Login/VistorRegister.vue'
@@ -16,6 +17,10 @@ const router = createRouter({
     {
       path:'/VisitorRegister',
       component:VistorRegister
+    },
+    {
+      path:'/test',
+      component:TestVue
     },
     {
       path:'/StudentRegister',
