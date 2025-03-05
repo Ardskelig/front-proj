@@ -1,4 +1,5 @@
 <template>
+  
   <van-dialog 
     v-model:show="showSubStudentForm" 
     title="申请子学生证"
@@ -6,10 +7,11 @@
     @confirm="handleSubStudentAuth"
     @cancel="resetSubStudentForm"
   >
+  <button @click="console.log(props.subDid)">打印传过来的子did</button>
     <van-form ref="formRef">
       <van-cell-group inset>
-        <!-- 使用 Field + Picker 组合实现选择器 -->
-        <van-field
+        
+        <!-- <van-field
           v-model="subStudentForm.did"
           readonly
           clickable
@@ -19,14 +21,14 @@
           @click="showPicker = true"
         />
 
-        <!-- 选择器弹窗 -->
+        
         <van-popup v-model:show="showPicker" round position="bottom">
           <van-picker
             :columns="subDIDOptions"
             @cancel="showPicker = false"
             @confirm="onPickerConfirm"
           />
-        </van-popup>
+        </van-popup> -->
 
         <!-- 选项复选框 -->
         <van-checkbox-group v-model="subStudentForm.options">
@@ -52,6 +54,12 @@ import {
   updateSubCredential,
   searchSubDIDsByUsagePrefix,
 } from '../db.js';
+//接收父组件
+const props=defineProps({
+  subDid: String
+})
+// const subDid=props.subDid
+
 
 // 响应式状态
 const showSubStudentForm = ref(false);
@@ -67,9 +75,11 @@ const subStudentForm = reactive({
 // 初始化加载
 onMounted(async () => {
   try {
+    const root = await getCurrentRootDID();
+    console.debug('根凭证数据:', root);
     // 使用前缀搜索代替全量获取（示例搜索"student"开头的usage）
     const searchPrefix = 'student'; // 可修改为动态参数
-    const subDIDs = await searchSubDIDsByUsagePrefix(searchPrefix);
+    // const subDIDs = props.subDid
     
     // 处理空结果情况
     if (subDIDs.length === 0) {
@@ -105,7 +115,7 @@ const onPickerConfirm = (value) => {
 const handleSubStudentAuth = async () => {
 
   
-  // emit('submitted', "向父组件传值，subStudentAuth") // 添加事件触发
+  emit('submitted', "向父组件传值，subStudentAuth") // 添加事件触发
 
 //用于测试暂时注释
 
@@ -113,12 +123,13 @@ const handleSubStudentAuth = async () => {
     console.groupCollapsed('[SubStudent] 开始提交申请');
     
     
-    // 表单验证
-    if (!subStudentForm.did) {
-      console.warn('[验证失败] 未选择子DID');
-      return;
-    }
-    console.debug('已选择子DID:', subStudentForm.did);
+    // // 表单验证
+    // if (!subStudentForm.did) {
+    //   console.warn('[验证失败] 未选择子DID');
+    //   return;
+    // }
+    // console.debug('已选择子DID:', subStudentForm.did);
+    console.log("发送请求：******************子did",props.subDid)
 
     // 获取根凭证
     const root = await getCurrentRootDID();
@@ -131,7 +142,7 @@ const handleSubStudentAuth = async () => {
 
     // 准备请求
     const postData = {
-      did: subStudentForm.did,
+      did: props.subDid,
       rootCredential: root.credentialDataStr[0],
       options: subStudentForm.options
     };

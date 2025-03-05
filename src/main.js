@@ -1,6 +1,7 @@
 // main.js 修改后的完整代码
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { Notify } from 'vant';
 import { 
   // 基础组件
   Button,
@@ -88,6 +89,7 @@ const startApp = async () => {
     // 其他插件
     app.use(createPinia())
     app.use(Calendar);
+    app.use(Notify);
     app.use(router)
     app.use(ElementPlus)
     app.use(Picker);

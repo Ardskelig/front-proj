@@ -10,14 +10,16 @@
 
     <div v-for="(card, index) in cards" :key="index" class="card">
       <div class="card-header">
-        <span class="did-type">{{ card.isRoot ? '根DID' : '子DID' }}</span>
-        <span class="did-id">{{ shortDid(card.id) }}</span>
+        <!-- <span class="did-type" v-if="card.isRoot"></span> -->
+        <span class="did-type"v-if=!card.isRoot>{{ card.usage }}</span>
+        <!-- <span class="did-id">{{ shortDid(card.id) }}</span> -->
       </div>
 
       
       <div class="background"></div>
-      <button @click="openSubAuthForm(card)" class="add-box-btn">
-        添加凭证
+      <button @click="openStudentAuthForm" v-if="card.isRoot" class="add-box-btn">学生认证</button>
+      <button @click="openSubAuthForm(card)" v-else class="add-box-btn" >
+        子学生证申请
       </button>
       <div class="logo">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.667 31.69" class="logo-svg">
@@ -33,7 +35,8 @@
            :key="boxIndex" 
            class="box"
            :class="'box' + ((boxIndex % 4) + 1)">
-        <span class="icon">{{ boxIndex + 1 }}</span>
+        <span >{{ box.vcName }}</span>
+        <span >{{ box.expireTime }}</span>
       </div>
       
 
@@ -64,7 +67,7 @@
   </div>
   <!-- 弹窗组件 -->
   <SubDIDCreate ref="subDidFormRef" @didCreated="handleDidCreate" />
-  <SubStudentAuth ref="subAuthRef" @submitted="handleSubAuthSuccess" />
+  <SubStudentAuth ref="subAuthRef" @submitted="handleSubAuthSuccess" :subDid="subDid"/>
   <StudentAuth ref="studentAuthRef" @studentAuthed="handleStudentAuth"/>
 </template>
 
@@ -76,6 +79,13 @@ import SubStudentAuth from '@/views/SubStudentAuth.vue';
 import { 
   getAllDIDWithCredentials
 } from '../db.js';
+//父子组件传值变量定义
+//申请子学生证：
+const subDid = ref('')
+
+
+
+
 // 添加加载状态
 const loading = ref(true);
 const error = ref(null);
@@ -88,20 +98,30 @@ const shortDid = (did) => {
 const loadDIDData = async () => {
   try {
     const allDID = await getAllDIDWithCredentials()
+    console.log("打印所有did数据：",allDID)
     cards.value = allDID.flatMap(root => [
       // 根DID卡片
       {
-        id: root.did,
+        rootdid: root.did,
         isRoot: true,
-        boxes: root.credentials.map(c => ({ credential: c })),
+        boxes: root.credentials.map(c => ({ 
+          credential: c.did, //凭证内容,之后根据需要渲染
+          vcName:"测试机构",
+          expireTime:"2023-12-31",
+        })),
         rawData: root
       },
       // 子DID卡片
       ...root.subDIDs.map(sub => ({
-        id: sub.did,
+        subdid: sub.did,
         isRoot: false,
         parentDid: root.did,
-        boxes: sub.credentials.map(c => ({ credential: c })),
+        usage: sub.usage,
+        boxes: sub.credentials.map(c => ({ 
+          credential: c.did,
+          vcName:"测试机构",
+          expireTime:"2023-12-31",
+        })),
         rawData: sub
       }))
     ])
@@ -113,7 +133,11 @@ const loadDIDData = async () => {
   }
 }
 // 初始化加载
-onMounted(loadDIDData)
+// onMounted(loadDIDData)
+
+onMounted(async()=>{
+  await loadDIDData()
+})
 // 推荐在onMounted中获取数据
 // onMounted(async () => {
 //   try {
@@ -230,12 +254,16 @@ const handleClick = (boxName) => {
 }
 
 // 打开表单弹窗
-const openSubAuthForm = (cardIndex) => {
-  pendingCardIndex = cardIndex
-  console.log('pendingCardIndex:', pendingCardIndex)
-  console.log(subAuthRef.value.showSubStudentForm)
+const openSubAuthForm = (card) => {
+  console.log("子学生证申请,子学生证明内容",card)
+  subDid.value = card.subdid
+  console.log("传递子did",subDid.value)
+  // pendingCardIndex = cardIndex
+  // console.log('pendingCardIndex:', pendingCardIndex)
+  // console.log(subAuthRef.value.showSubStudentForm)
   subAuthRef.value.showSubStudentForm = true
-  console.log(subAuthRef.value.showSubStudentForm)
+  // console.log(subAuthRef.value.showSubStudentForm)
+  addBox(cardIndex)
 }
 
 //学生认证
@@ -261,7 +289,9 @@ const handleDidCreate = async () => {
   await loadDIDData() // 重新加载包含新DID的数据
 }
 // 处理学生认证
-const handleStudentAuth = async () => {
+const handleStudentAuth = async (studentAuthed) => {
+  console.log("学生认证结果：",studentAuthed)
+
   await loadDIDData() // 重新加载包含新凭证的数据
 }
 

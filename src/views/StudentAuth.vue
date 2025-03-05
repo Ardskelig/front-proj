@@ -31,6 +31,7 @@
   </template>
   
   <script setup>
+  import { showNotify } from 'vant';
   import { 
     initDB,
     getCurrentRootDID,
@@ -64,7 +65,7 @@
   const handleStudentAuth = async () => {
     try {
       // 1. 获取当前根DID
-      const rootDID = await getCurrentRootDID();
+      const rootDID = await getCurrentRootDID();//从数据库中获取根DID
       if (!rootDID) {
         throw new Error('未找到根DID配置');
       }
@@ -80,11 +81,16 @@
       );
   
       if (response.data.code !== 1) {
+        emit('studentAuthed',"认证失败")
+        showNotify({ type: 'warning', message: '认证失败' });
         throw new Error(response.data.msg || '学生证申请失败');
+        
       }
   
       // 3. 直接更新根DID凭证
       await updateRootCredential(response.data.data.credentialDataStr);
+      emit('studentAuthed',"认证成功")
+      showNotify({ type: 'success', message: '认证成功' });
   
       // 4. 记录操作日志
       addOperationLog({
