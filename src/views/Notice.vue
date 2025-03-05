@@ -83,7 +83,7 @@ onMounted(async () => {
   try {
     const root = await getCurrentRootDID()
     const response = await axios.post(
-      'http://chaindid.natapp1.cc/api/query/queryList',
+      'http://117.72.80.248:9999/api/query/queryList',
       { did: root.did },
       {
         headers: { 'Content-Type': 'application/json',
