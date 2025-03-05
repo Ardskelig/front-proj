@@ -253,6 +253,7 @@ const handleClick = (boxName) => {
   }
 }
 
+// xkb
 // 打开表单弹窗
 const openSubAuthForm = (card) => {
   console.log("子学生证申请,子学生证明内容",card)
@@ -263,7 +264,7 @@ const openSubAuthForm = (card) => {
   // console.log(subAuthRef.value.showSubStudentForm)
   subAuthRef.value.showSubStudentForm = true
   // console.log(subAuthRef.value.showSubStudentForm)
-  addBox(cardIndex)
+  // addBox(cardIndex)
 }
 
 //学生认证

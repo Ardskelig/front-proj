@@ -88,7 +88,13 @@
       }
   
       // 3. 直接更新根DID凭证
-      await updateRootCredential(response.data.data.credentialDataStr);
+      // xkb
+      await updateRootCredential(
+        response.data.data.credentialDataStr,
+        response.data.data.vcName,
+        response.data.data.expireTime,
+        response.data.data.logo
+      );
       emit('studentAuthed',"认证成功")
       showNotify({ type: 'success', message: '认证成功' });
   

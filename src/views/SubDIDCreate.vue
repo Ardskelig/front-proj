@@ -1,3 +1,6 @@
+<!-- 获取子DID -->
+
+
 <template>
   <van-dialog 
     v-model:show="showSubForm" 

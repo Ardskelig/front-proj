@@ -100,6 +100,9 @@ export const initRootDID = async () => {
       did: FIXED_ROOT_DID,
       credentialDataStr: [], // 初始化为空数组
       credentials: [],
+      vcName: [],
+      expireTime:[],
+      logo:[],
       createdAt: new Date().toISOString(),
       updatedAt: null
     };
@@ -114,7 +117,7 @@ export const initRootDID = async () => {
   });
 };
 
-export const updateRootCredential = async (credential) => {
+export const updateRootCredential = async (credential, vcName, expireTime, logo) => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('rootDID', 'readwrite');
@@ -128,6 +131,9 @@ export const updateRootCredential = async (credential) => {
         ...data,
         // 向数组追加新凭证
         credentialDataStr: [...data.credentialDataStr, credential],
+        vcName: [...data.vcName, vcName],
+        expireTime: [...data.expireTime, expireTime],
+        logo: [...data.logo, logo],
         updatedAt: new Date().toISOString()
       };
 
@@ -136,19 +142,23 @@ export const updateRootCredential = async (credential) => {
   });
 };
 
+
+// xkb
 // ✅ 核心创建函数（参数顺序与调用一致）
-export const dbCreateSubDID = async (usage, credentialData) => {
+export const dbCreateSubDID = async (usage, subDid) => {
   try {
     // 1. 创建子DID基础信息
-    const subDID = await createSubDID(usage);
+    const subDID = await createSubDID(usage, subDid);
     
+    console.log(subDID)
+
     // 2. 添加凭证数据
-    await addCredential(subDID.did, credentialData);
+    // await addCredential(subDID.did, subDID);
     
     // 3. 返回完整数据
     return {
       ...subDID,
-      credentialDataStr: [credentialData] // 返回最新凭证数组
+      credentialDataStr: [] // 返回最新凭证数组????
     };
   } catch (error) {
     throw new Error(`子DID创建失败: ${error.message}`);
@@ -156,21 +166,25 @@ export const dbCreateSubDID = async (usage, credentialData) => {
 };
 
 /* 底层子DID创建 */
-const createSubDID = async (usage) => {
+const createSubDID = async (usage, subDID) => {
   const db = await initDB();
   return new Promise((resolve, reject) => {
     const tx = db.transaction('subDID', 'readwrite');
     const store = tx.objectStore('subDID');
 
     // ✅ 生成唯一子DID（固定前缀+时间戳+随机数）
-    const subDid = `${FIXED_ROOT_DID}_sub${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
+    // const subDid = `${FIXED_ROOT_DID}_sub${Date.now()}${Math.random().toString(36).slice(2, 6)}`;
+
     
     // ✅ 数据结构严格对应
     const subData = {
-      did: subDid,
+      did: subDID,
       rootDid: FIXED_ROOT_DID,
       usage: usage, // 直接使用传入的usage参数
       credentialDataStr: [], // 初始空数组（由addCredential填充）
+      vcName:[],
+      logo:[],
+      expireTime:[],
       createdAt: new Date().toISOString(),
       updatedAt: null
     };
@@ -209,7 +223,7 @@ const addCredential = async (did, credentialData) => {
 };
 
 
-
+// xkb
 export const updateSubCredential = async (did, credential) => {
   const db = await initDB();
   const currentRoot = await getCurrentRootDID();
@@ -229,6 +243,9 @@ export const updateSubCredential = async (did, credential) => {
         ...data,
         // 向数组追加新凭证
         credentialDataStr: [...data.credentialDataStr, credential.credentialDataStr],
+        vcName: [...data.vcName, credential.vcName],
+        expireTime: [...data.expireTime, credential.expireTime],
+        logo: [...data.logo, credential.logo],
         updatedAt: new Date().toISOString()
       };
 
@@ -296,6 +313,7 @@ export const searchSubDIDsByUsagePrefix = async (prefix) => {
   });
 };
 
+// xkb
 export const getAllDIDWithCredentials = async () => {
   const db = await initDB();
   
@@ -315,12 +333,18 @@ export const getAllDIDWithCredentials = async () => {
   return rootDIDs.map(root => ({
     did: root.did,
     credentials: root.credentialDataStr || [],
+    vcName: root.vcName || [],
+    expireTime: root.expireTime || [],
+    logo: root.logo || [],
     subDIDs: subDIDs
       .filter(sub => sub.rootDid === root.did)
       .map(sub => ({
         did: sub.did,
         usage: sub.usage,
         credentials: sub.credentialDataStr || [],
+        vcName: sub.vcName || [],
+        expireTime: sub.expireTime || [],
+        logo : sub.logo || [],
         createdAt: sub.createdAt,
         updatedAt: sub.updatedAt
       }))

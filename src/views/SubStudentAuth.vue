@@ -170,10 +170,14 @@ const handleSubStudentAuth = async () => {
 
     //这里建议增加response.data.code==1的判断
     //emit部分可以向父组件传值
+    // xkb
     emit('submitted', response.data) // 添加事件触发
     // 更新凭证
-    await updateSubCredential(subStudentForm.did, {
-      credentialDataStr: response.data.data.credentialDataStr
+    await updateSubCredential(props.subDid, {
+      credentialDataStr: response.data.data.credentialDataStr,
+      vcName: response.data.data.vcName,
+      expireTime: response.data.data.expireTime,
+      logo: response.data.data.logo
     });
     console.info('子凭证更新完成');
 
