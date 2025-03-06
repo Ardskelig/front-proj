@@ -59,13 +59,13 @@ const router = createRouter({
         {
           path: 'qr-scanner',
           component: () => import('@/views/qrScanner.vue'),
-          meta: { tabIndex: 0 }
+          meta: { title: '扫一扫' }
         },
-        {
-          path: 'qr-scanner',
-          component: () => import('@/views/qrScanner.vue'),
-          meta: { tabIndex: 0 }
-        }
+        // {
+        //   path: 'qr-scanner',
+        //   component: () => import('@/views/qrScanner.vue'),
+        //   meta: { tabIndex: 0 }
+        // }
       ]
     }
   ],

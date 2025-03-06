@@ -6,6 +6,8 @@
         left-text="返回"
         left-arrow
         @click-left="router.back"
+        fixed="true"
+        placeholder="true"
       />
       <button @click="testData">点击查看formData</button>
   

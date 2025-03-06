@@ -7,7 +7,7 @@
      <div v-if="loading" class="loading">加载中...</div>
     
     <!-- 错误提示 -->
-    <div v-if="error" class="error">加载失败: {{ error }}</div>
+    <!-- <div v-if="error" class="error">加载失败: {{ error }}</div> -->
 
     <div v-for="(card, index) in cards" :key="index" class="card">
       <div class="card-header">
@@ -186,7 +186,7 @@ const generateQRContent = async (box,card) => {
       console.log("二维码内容", response.data)
       qrContent.value = JSON.stringify({
         key: response.data.map.key,
-        url: response.data.map,
+        url: response.data.map.url,
         timestamp: response.data.map.timestamp,
       }, null, 2)
     } else {

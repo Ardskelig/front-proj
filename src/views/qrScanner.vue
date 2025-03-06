@@ -1,8 +1,8 @@
 <template>
   <div class="block-main">
-    <div class="head-wrap">
+    <!-- <div class="head-wrap">
       <span class="title">扫一扫</span>
-    </div>
+    </div> -->
 
     <!-- <div class="qr-container">
       <qrcode-stream
@@ -35,6 +35,8 @@
 import { reactive, ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { QrcodeStream } from "vue-qrcode-reader";
+import { showSuccessToast, showFailToast } from 'vant';
+import instance from "@/utils/request.js"
 import { showToast } from "vant";
 export default {
   components: {
@@ -44,11 +46,38 @@ export default {
   setup() {
     const testVice = reactive([]);
     const router = useRouter();
+    const sendToBackend=async (qrString)=>{
+      try{
+        console.log("发送至后端：",qrString)
+        // const formData={
+        //   key:qrString.key,
+        //   url:qrString.url,
+        //   timestamp:qrString.timestamp
+        // }
+        const formData=qrString
+        console.log("formData",formData)
+        const response =await instance.post("/api/did/verifyQrcode",formData,{
+          headers:{
+            "Content-Type":"application/json"
+          }
+        })
+        if(response.data.code==1){
+          showSuccessToast(response.data.msg);
+        }else{
+          showFailToast(response.data.msg);
+        }
+      }catch{
+        showFailToast("二维码有误！");
+      }
+    }
     // 扫码成功后的回调
     const onDecode = (detectedCodes) => {
-      alert("成功扫描到二维码")
+      // alert("成功扫描到二维码")
       const qrString = detectedCodes[0].rawValue
-      alert(`扫描结果：${qrString}`)
+      // alert(`扫描结果：${qrString}`)
+      console.log("扫描结果",qrString)
+      sendToBackend(qrString)
+
 
       // 接下来处理逻辑
     };
