@@ -6,6 +6,7 @@ import LoginPage from '@/views/Login/LoginPage.vue'
 import StudentRegister from '@/views/Login/StudentRegister.vue'
 import VistorRegister from '@/views/Login/VistorRegister.vue'
 import ChooseSV from '@/views/Login/ChooseSV.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -54,6 +55,16 @@ const router = createRouter({
           path: 'Wallet',
           component: () => import('@/views/Wallet/Wallet.vue'),
           meta: { title: '我的钱包' }
+        },
+        {
+          path: 'qr-scanner',
+          component: () => import('@/views/qrScanner.vue'),
+          meta: { tabIndex: 0 }
+        },
+        {
+          path: 'qr-scanner',
+          component: () => import('@/views/qrScanner.vue'),
+          meta: { tabIndex: 0 }
         }
       ]
     }

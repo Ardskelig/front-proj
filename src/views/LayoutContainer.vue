@@ -6,7 +6,7 @@
       <span class="text">通知</span>
       <span class="circle"></span>
     </button>
-    <van-tabbar-item icon="scan">扫描</van-tabbar-item>
+    <van-tabbar-item icon="scan" @click="goToScan">扫描</van-tabbar-item>
      
     <button class="animated-button" @click="goToWallet">
       <span class="text">钱包</span>
@@ -38,6 +38,7 @@ const goToNotifications = () => {
 
 const goToScan = () => {
   console.log('Navigating to Scan');
+  router.push('/qr-scanner')
 };
 
 const goToWallet = () => {
