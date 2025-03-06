@@ -354,11 +354,27 @@ const beforeDelete = (file) => {
   return true;
 };
 
+import { getRootDID, updateRootCredential } from '@/db.js';
 
 // 提交表单
-const onSubmit = () => {
-  //数据库读取did
-  const did = "did:tdid:w1:0xe2b76db07b3a7ede271bb72c986ef37610353ba4";
+const onSubmit = async() => {
+  // IndexedDB读取did
+  // 获取DID列表
+  const queryResult = await getRootDID();
+    console.log("DID查询结果：", queryResult);
+
+    // 校验数据有效性（关键修改点）
+    if (!Array.isArray(queryResult) || queryResult.length === 0) {
+      throw new Error('未查询到有效的DID记录');
+    }
+
+    // 明确选择第一个DID（根据业务需求调整）
+    const firstValidDID = queryResult.find(item => item?.did);
+    if (!firstValidDID) {
+      throw new Error('DID数据格式异常');
+    }
+    const did = firstValidDID.did;
+    console.log("使用的DID:", did);
 
   // 转换表单数据为后端要求的格式
   const submitData = {
@@ -376,8 +392,19 @@ const onSubmit = () => {
       'Content-Type': 'application/json'
     }
   })
-  .then(response => {
+  .then(async response => {
     showToast('提交成功');
+
+    console.log(response)
+
+    // 获取response中的凭证数据，并且存储到indexedDB
+    await updateRootCredential(
+        response.data.data.credentialDataStr,
+        response.data.data.vcName,
+        response.data.data.expireTime,
+        response.data.data.logo
+    );
+
     router.push('/Notice');
     console.log('接口响应:', response.data);
   })

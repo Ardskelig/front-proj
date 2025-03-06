@@ -350,3 +350,25 @@ export const getAllDIDWithCredentials = async () => {
       }))
   }));
 };
+
+
+export const getRootDID = async () => {
+  try {
+    const db = await initDB();
+    
+    const rootDIDs = await new Promise((resolve, reject) => {
+      const transaction = db.transaction('rootDID', 'readonly');
+      const store = transaction.objectStore('rootDID');
+      const request = store.getAll();
+      
+      request.onsuccess = (e) => resolve(e.target.result);
+      request.onerror = (e) => reject(e.target.error);
+    });
+
+    return rootDIDs?.map(root => ({ did: root.did })) || [];
+    
+  } catch (error) {
+    console.error('Failed to fetch root DIDs:', error);
+    return [];
+  }
+};
