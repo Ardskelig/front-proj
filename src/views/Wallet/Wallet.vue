@@ -37,7 +37,7 @@
          :key="boxIndex" 
          class="box"
          :class="'box' + ((boxIndex % 4) + 1)"
-         @click="handleClick(box)">
+         @click="handleClick(box,card)">
         <div class="box-content">
           <span class="vc-name">{{ box.vcName }}</span>
           <span class="expire-time">expire-time:{{ formatExpireTime(box.expireTime) }}</span>
@@ -60,9 +60,11 @@
     show-cancel-button
     @confirm="showDialog = false"
   >
+  
     <div class="dialog-content">
+      <van-loading v-if="loading" size="24px" class="loading">加载中...</van-loading>
       <vue-qrcode 
-        v-if="selectedBox"
+        v-else-if="selectedBox"
         :value="qrContent"
         :options="{ width: 240, height: 240 }"
         class="qrcode"
@@ -77,13 +79,13 @@
 
 <script setup>
 import { ref,onMounted } from 'vue'
+import { showSuccessToast, showFailToast } from 'vant';
 import { Dialog as VanDialog } from 'vant'
-import StudentAuth from '@/views/StudentAuth.vue';
-import SubDIDCreate from '@/views/SubDIDCreate.vue';
-import SubStudentAuth from '@/views/SubStudentAuth.vue';
-import { 
-  getAllDIDWithCredentials
-} from '../db.js';
+import StudentAuth from '@/views/Wallet/StudentAuth.vue';
+import SubDIDCreate from '@/views/Wallet/SubDIDCreate.vue';
+import SubStudentAuth from '@/views/Wallet/SubStudentAuth.vue';
+import { getAllDIDWithCredentials} from '../../db.js';
+import instance from '@/utils/request.js'
 //父子组件传值变量定义
 //申请子学生证：
 const subDid = ref('')
@@ -117,7 +119,7 @@ const loadDIDData = async () => {
     cards.value = allDID.flatMap(root => [
       // 根DID卡片
       {
-        rootdid: root.did,
+        did: root.did,
         isRoot: true,
         boxes: root.credentials.map((c,index) => ({ 
           credential: c, //凭证内容,之后根据需要渲染
@@ -129,7 +131,7 @@ const loadDIDData = async () => {
       },
       // 子DID卡片
       ...root.subDIDs.map(sub => ({
-        subdid: sub.did,
+        did: sub.did,
         isRoot: false,
         parentDid: root.did,
         usage: sub.usage,
@@ -155,68 +157,6 @@ const loadDIDData = async () => {
 onMounted(async()=>{
   await loadDIDData()
 })
-// 推荐在onMounted中获取数据
-// onMounted(async () => {
-//   try {
-//     const allDID = await getAllDIDWithCredentials();
-//     console.log('✅ DID数据加载完成');
-
-//     // 基础日志
-//     console.log('📦 原始数据结构:', allDID);
-
-//     // 空数据校验
-//     if (!allDID || allDID.length === 0) {
-//       console.warn('⚠️ 数据库为空，请先创建DID');
-//       return;
-//     }
-
-//     // 结构化日志输出
-//     console.group('🌳 DID层级详情');
-//     allDID.forEach((root, index) => {
-//       console.groupCollapsed(`🏠 根DID #${index + 1}: ${root.did}`);
-//       console.log('📅 创建时间:', new Date(root.createdAt).toLocaleString());
-//       console.log('🔑 凭证数量:', root.credentials.length);
-//       console.table(root.credentials.map((cred, i) => ({
-//         '凭证索引': i + 1,
-//         '类型': typeof cred,
-//         '前20字符': cred.slice(0, 20) + '...'
-//       })));
-
-//       // 子DID详情
-//       console.group(`子DID列表 (共${root.subDIDs.length}个)`);
-//       root.subDIDs.forEach((sub, subIndex) => {
-//         console.groupCollapsed(`🔸 子DID #${subIndex + 1}: ${sub.did}`);
-//         console.log('🏷️ 用途:', sub.usage);
-//         console.log('📅 创建时间:', new Date(sub.createdAt).toLocaleString());
-//         console.log('🔑 凭证数量:', sub.credentials.length);
-//         console.table(sub.credentials.map((cred, i) => ({
-//           '凭证索引': i + 1,
-//           '类型': typeof cred,
-//           '前20字符': cred.slice(0, 20) + '...'
-//         })));
-//         console.groupEnd();
-//       });
-//       console.groupEnd();
-//       console.groupEnd();
-//     });
-//     console.groupEnd();
-
-//     // 统计信息
-//     console.log(
-//       '📊 系统统计:',
-//       `根DID: ${allDID.length}个 |`,
-//       `总子DID: ${allDID.reduce((sum, root) => sum + root.subDIDs.length, 0)}个 |`,
-//       `总凭证: ${allDID.reduce((sum, root) => sum + root.credentials.length + 
-//         root.subDIDs.reduce((s, sub) => s + sub.credentials.length, 0), 0)}个`
-//     );
-
-//   } catch (err) {
-//     error.value = err.message;
-//     console.error('❌ 数据加载失败:', err);
-//   } finally {
-//     loading.value = false;
-//   }
-// });
 
 
 const subDidFormRef = ref(null);
@@ -224,56 +164,49 @@ const subAuthRef = ref(null)
 const studentAuthRef = ref(null)
 let pendingCardIndex = null
 let selectedCard = null
-// const cards = ref([{}]);
-// const addCard = () => {
-//   cards.value.push({});
-// }
-
-
-//新cards，每个card有一个box数组，每个cards内部可以再次添加对象属性
-// const cards = ref([
-//   { 
-//     boxes: [
-//       { name: "Instagram", icon: { viewBox: "0 0 30 30", path: "M 9.9980469 3 C 6.1390469 3 3 6.1419531 3 10.001953 L 3 20.001953 C 3 23.860953 6.1419531 27 10.001953 27 L 20.001953 27 C 23.860953 27 27 23.858047 27 19.998047 L 27 9.9980469 C 27 6.1390469 23.858047 3 19.998047 3 L 9.9980469 3 z M 22 7 C 22.552 7 23 7.448 23 8 C 23 8.552 22.552 9 22 9 C 21.448 9 21 8.552 21 8 C 21 7.448 21.448 7 22 7 z M 15 9 C 18.309 9 21 11.691 21 15 C 21 18.309 18.309 21 15 21 C 11.691 21 9 18.309 9 15 C 9 11.691 11.691 9 15 9 z M 15 11 A 4 4 0 0 0 11 15 A 4 4 0 0 0 15 19 A 4 4 0 0 0 19 15 A 4 4 0 0 0 15 11 z" } },
-//       { name: "Twitter", icon: { viewBox: "0 0 512 512", path: "M459.37 151.716c..." } },
-//       // { name: "Discord", icon: { viewBox: "0 0 640 512", path: "M524.531,69.836a1.5,1.5,0,0,0..." } }
-// ] 
-//   }
-// ]);
-//新addCard
-// const addCard = () => {
-//   cards.value.push({ boxes: [{ name: "Discord", icon: { viewBox: "0 0 640 512", path: "M524.531,69.836a1.5,1.5,0,0,0..." } }] });
-// }
-
-// // 给指定的 Card 增加一个 Box
-// const addBox = (cardIndex) => {
-//   cards.value[cardIndex].boxes.push({});
-// }
-
 
 // 点击处理
-const handleClick = (box) => {
+const handleClick = (box,card) => {
   selectedBox.value = box
-  generateQRContent(box)
+  generateQRContent(box,card)
   showDialog.value = true
 }
 
 // 生成二维码内容
-const generateQRContent = (box) => {
-  qrContent.value = JSON.stringify({
-    // credential: box.credential,
-    vcName: box.vcName,
-    expireTime: box.expireTime,
-    timestamp: Date.now(),
-    // 可以添加更多需要包含的信息
-  }, null, 2)
+const generateQRContent = async (box,card) => {
+  loading.value = true // 开始加载
+  console.log(card.did)
+  try {
+    const response = await instance.post("/api/file/uploadJson", {
+      did:card.did,
+      credential: box.credential,
+    })
+    
+    if (response.data.code === 1) {
+      console.log("二维码内容", response.data)
+      qrContent.value = JSON.stringify({
+        key: response.data.map.key,
+        url: response.data.map,
+        timestamp: response.data.map.timestamp,
+      }, null, 2)
+    } else {
+      qrContent.value = null
+      showFailToast('二维码生成失败')
+    }
+  } catch (error) {
+    console.error("请求失败", error)
+    qrContent.value = null
+    showFailToast('请求失败，请稍后再试')
+  } finally {
+    loading.value = false // 结束加载
+  }
 }
 
 // xkb
 // 打开表单弹窗
 const openSubAuthForm = (card) => {
   console.log("子学生证申请,子学生证明内容",card)
-  subDid.value = card.subdid
+  subDid.value = card.did
   console.log("传递子did",subDid.value)
   // pendingCardIndex = cardIndex
   // console.log('pendingCardIndex:', pendingCardIndex)
@@ -622,5 +555,12 @@ const handleStudentAuth = async (studentAuthed) => {
   &__content {
     padding-bottom: 20px;
   }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 240px; /* 确保与二维码相同大小 */
 }
 </style>

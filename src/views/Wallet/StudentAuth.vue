@@ -38,7 +38,7 @@
     dbCreateSubDID,
     updateRootCredential,
     updateSubCredential
-  } from '../db.js';
+  } from '@/db.js';
   import { ref, reactive } from 'vue';
   import axios from 'axios';  // 导入 axios
   

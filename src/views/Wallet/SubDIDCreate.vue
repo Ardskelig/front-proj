@@ -39,7 +39,7 @@ import axios from 'axios'; // 确保已安装axios
 import { 
     getCurrentRootDID,
     dbCreateSubDID,
-  } from '../db.js';
+  } from '@/db.js';;
 
 const showSubForm = ref(false);
 const currentRootDid = ref('');

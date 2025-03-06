@@ -34,7 +34,7 @@
               <van-tag plain class="type-tag">
                 {{ typeMap[item.type] }}
               </van-tag>
-              <van-tag class="custom-tag">
+              <van-tag >
                 {{ item.tag }}
               </van-tag>
             </div>
@@ -45,6 +45,7 @@
           </div>
         </div>
       </van-cell>
+      <div style="padding-top: 5vh;"></div>
     </van-cell-group>
 
     <div v-if="!loading && !error && notifications.length === 0" class="empty-tip">
@@ -56,9 +57,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { showNotify } from 'vant';
+import instance from '@/utils/request.js'
+// import axios from 'axios'
 import { useRouter } from 'vue-router'
-import { getCurrentRootDID } from '../db.js'
+import { getCurrentRootDID } from '../../db.js'
 import dayjs from 'dayjs'
 
 // 状态管理
@@ -82,16 +85,18 @@ const typeColors = {
 onMounted(async () => {
   try {
     const root = await getCurrentRootDID()
-    const response = await axios.post(
-      'http://117.72.80.248:9999/api/query/queryList',
-      { did: root.did },
-      {
-        headers: { 'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-         },
-        timeout:16000
-            }
-    )
+    // const response = await axios.post(
+    //   'http://117.72.80.248:9999/api/query/queryList',
+    //   { did: root.did },
+    //   {
+    //     headers: { 'Content-Type': 'application/json',
+    //       'X-Requested-With': 'XMLHttpRequest'
+    //      },
+    //     timeout:16000
+    //     }
+    // )
+    //使用封装的axios发送请求
+    const response = await instance.post('/api/query/queryList', { did: root.did })
 
     if (response.data.code === 1) {
       notifications.value = response.data.data.map(blog => ({
@@ -105,9 +110,11 @@ onMounted(async () => {
         blogId: blog.blogId || 0
       }))
     } else {
+      showNotify({ type: 'warning', message: '服务异常' });
       throw new Error(response.data.msg || '接口返回异常')
     }
   } catch (err) {
+    showNotify({ type: 'warning', message: '服务异常' });
     console.error('数据加载失败:', err)
     error.value = true
   } finally {
@@ -313,6 +320,16 @@ const handleClick = (item) => {
 
 :root:root {
   --van-nav-bar-background:#1A1A1A;
+}
+
+.type-tag {
+  color: #fff;
+    font-weight: 500;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    backdrop-filter: blur(4px);
 }
 
 </style>

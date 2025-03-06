@@ -2,6 +2,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import { Notify } from 'vant';
+
 import { 
   // 基础组件
   Button,

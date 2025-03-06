@@ -34,7 +34,7 @@ const router = createRouter({
     {
       path: '/detail/:queryId/:blogId',
       name: 'BlogDetail',
-      component: () => import('@/views/DetailPage.vue'), // 动态导入
+      component: () => import('@/views/Notice/DetailPage.vue'), // 动态导入
       props: true // 自动将路由参数转为 props
     },
     {
@@ -47,12 +47,12 @@ const router = createRouter({
       children:[
         {
           path: 'Notice',
-          component: () => import('@/views/Notice.vue'),
+          component: () => import('@/views/Notice/Notice.vue'),
           meta: { title: '通知中心' }
         },
         {
           path: 'Wallet',
-          component: () => import('@/views/Wallet.vue'),
+          component: () => import('@/views/Wallet/Wallet.vue'),
           meta: { title: '我的钱包' }
         }
       ]

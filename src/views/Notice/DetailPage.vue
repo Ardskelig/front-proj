@@ -144,6 +144,7 @@
   import { showToast, showFailToast } from 'vant';
   import axios from 'axios'
   import { ImagePreview } from 'vant'
+  import instance from '@/utils/request.js'
   
   const route = useRoute()
   const router = useRouter()
@@ -167,8 +168,8 @@
   onMounted(async () => {
     try {
       
-      const response = await axios.post(
-        'http://chaindid.natapp1.cc/api/query/getQueryDetails',
+      const response = await instance.post(
+        '/api/query/getQueryDetails',
         { queryId, blogId },
         {
           headers: { 'Content-Type': 'application/json' },
@@ -366,10 +367,6 @@ const onSubmit = () => {
     keyList: Object.keys(formData.value),
     valueList: Object.values(formData.value)
   };
-
-  // 过滤空值（如果需要）
-  // submitData.keyList = submitData.keyList.filter((_, i) => submitData.valueList[i]);
-  // submitData.valueList = submitData.valueList.filter(v => v);
 
   console.log('最终提交数据:', submitData);
   

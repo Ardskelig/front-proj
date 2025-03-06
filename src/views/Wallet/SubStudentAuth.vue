@@ -53,7 +53,7 @@ import {
   getCurrentRootDID,
   updateSubCredential,
   searchSubDIDsByUsagePrefix,
-} from '../db.js';
+} from '@/db.js';;
 //接收父组件
 const props=defineProps({
   subDid: String

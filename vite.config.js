@@ -6,6 +6,14 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  server:{
+    proxy:{
+      "/api":{
+        target:"http://chaindid.natapp1.cc",
+        changeOrigin:true,
+      }
+    }
+  },
   plugins: [
     vue(),
     vueDevTools(),
