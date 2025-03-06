@@ -48,12 +48,12 @@ const router = createRouter({
         {
           path: 'Notice',
           component: () => import('@/views/Notice.vue'),
-          meta: { tabIndex: 0 }
+          meta: { title: '通知中心' }
         },
         {
           path: 'Wallet',
           component: () => import('@/views/Wallet.vue'),
-          meta: { tabIndex: 0 }
+          meta: { title: '我的钱包' }
         }
       ]
     }

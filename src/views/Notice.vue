@@ -1,5 +1,5 @@
 <template>
-  <van-nav-bar title="通知" fixed="true" />
+  <!-- <van-nav-bar title="通知" fixed="true" /> -->
   <router-view v-slot="{ Component }">
     <transition name="slide-fade" mode="out-in">
       <component :is="Component" />

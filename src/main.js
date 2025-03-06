@@ -38,11 +38,14 @@ import {
 } from 'vant'
 import { Cascader } from 'vant';
 import 'vant/lib/index.css';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import ElementPlus from 'element-plus'
+import 'element-plus/dist/index.css'
 import App from './App.vue'
 import router from './router'
 import { Calendar } from 'vant';
 import { initDB, initRootDID } from './db.js';
+import VueQrcode from 'vue-qrcode'
 import { Picker } from 'vant';
 const startApp = async () => {
   try {
@@ -88,15 +91,19 @@ const startApp = async () => {
 
     // 其他插件
     app.use(createPinia())
+    app.component('vue-qrcode', VueQrcode)
     app.use(Calendar);
     app.use(Notify);
     app.use(router)
     app.use(ElementPlus)
     app.use(Picker);
     app.use(Cascader);   
+    for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+      app.component(key, component)
+    }
     // 挂载ImagePreview到全局属性（可选）
     app.config.globalProperties.$imagePreview = ImagePreview
-    
+   
     app.mount('#app')
     
   } catch (err) {

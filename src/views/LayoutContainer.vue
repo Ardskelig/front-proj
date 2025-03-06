@@ -1,4 +1,5 @@
 <template>
+  <van-nav-bar :title="pageTitle" fixed="true" placeholder="true"/>
   <router-view />
   <van-tabbar v-model="active">
     <button class="animated-button" @click="goToNotifications">
@@ -17,9 +18,19 @@
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter} from 'vue-router'
+import { computed } from 'vue'
+const route = useRoute()
 const active = ref(0);
 const router=useRouter();
+
+// 动态计算页面标题
+const pageTitle = computed(() => {
+  // 获取当前路由的元信息中的title
+  const matchedRoute = route.matched.find(r => r.meta?.title)
+  return matchedRoute?.meta.title || '默认标题'
+})
+
 
 const goToNotifications = () => {
   router.push('/Notice')

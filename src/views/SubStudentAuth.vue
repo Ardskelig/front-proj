@@ -7,7 +7,7 @@
     @confirm="handleSubStudentAuth"
     @cancel="resetSubStudentForm"
   >
-  <button @click="console.log(props.subDid)">打印传过来的子did</button>
+  <!-- <button @click="console.log(props.subDid)">打印传过来的子did</button> -->
     <van-form ref="formRef">
       <van-cell-group inset>
         
@@ -165,13 +165,14 @@ const handleSubStudentAuth = async () => {
     // 处理响应
     if (response.data.code !== 1) {
       console.error(`[API错误] ${response.data.msg || '未知错误'}`);
+      emit('submitted',0)
       throw new Error(response.data.msg);
     }
 
     //这里建议增加response.data.code==1的判断
     //emit部分可以向父组件传值
     // xkb
-    emit('submitted', response.data) // 添加事件触发
+    
     // 更新凭证
     await updateSubCredential(props.subDid, {
       credentialDataStr: response.data.data.credentialDataStr,
@@ -179,6 +180,7 @@ const handleSubStudentAuth = async () => {
       expireTime: response.data.data.expireTime,
       logo: response.data.data.logo
     });
+    emit('submitted',1) // 添加事件触发
     console.info('子凭证更新完成');
 
     console.groupEnd();
