@@ -97,7 +97,7 @@ onMounted(async () => {
     // )
     //使用封装的axios发送请求
     const response = await instance.post('/api/query/queryList', { did: root.did })
-
+    console.log("查询通知返回响应：",response)
     if (response.data.code === 1) {
       notifications.value = response.data.data.map(blog => ({
         queryId: blog.queryId,

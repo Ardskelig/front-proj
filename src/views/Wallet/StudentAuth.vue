@@ -41,6 +41,7 @@
   } from '@/db.js';
   import { ref, reactive } from 'vue';
   import axios from 'axios';  // 导入 axios
+  import instance from "@/utils/request.js"
   
   // 定义表单
   const showStudentForm = ref(false);
@@ -71,51 +72,55 @@
       }
   
       // 2. 提交学生认证请求
-      const response = await axios.post(
-        'http://117.72.80.248:9999/api/insider/getStudentCard',
+      const response = await instance.post(
+        '/api/insider/getStudentCard',
         {
-          rootDid: rootDID.did,  // 使用完整的根DID
+          rootDid: rootDID.did,  // 使用完整的根DIDf
           ...studentForm
         },
         { timeout: 10000 }
       );
-  
-      if (response.data.code !== 1) {
+      if(response.data.code===1){
+      // 3. 直接更新根DID凭证
+            // xkb
+            await updateRootCredential(
+              response.data.data.credentialDataStr,
+              response.data.data.vcName,
+              response.data.data.expireTime,
+              response.data.data.logo
+            );
+            emit('studentAuthed',"认证成功")
+            showNotify({ type: 'success', message: '认证成功' });
+            
+            // 4. 记录操作日志
+            addOperationLog({
+              type: '学生证签发',
+              data: {
+                rootDid: rootDID.did,
+                credential: response.data.data,
+                formData: { ...studentForm }
+              }
+            });
+          
+            // 5. 输出关键信息
+            console.log('学生证签发信息:', {
+              vcName: response.data.data.vcName,
+              orgName: response.data.data.orgName,
+              expireTime: response.data.data.expireTime
+            });
+          
+            resetStudentForm();
+      }else{
         emit('studentAuthed',"认证失败")
         showNotify({ type: 'warning', message: '认证失败' });
         throw new Error(response.data.msg || '学生证申请失败');
-        
       }
-  
-      // 3. 直接更新根DID凭证
-      // xkb
-      await updateRootCredential(
-        response.data.data.credentialDataStr,
-        response.data.data.vcName,
-        response.data.data.expireTime,
-        response.data.data.logo
-      );
-      emit('studentAuthed',"认证成功")
-      showNotify({ type: 'success', message: '认证成功' });
-  
-      // 4. 记录操作日志
-      addOperationLog({
-        type: '学生证签发',
-        data: {
-          rootDid: rootDID.did,
-          credential: response.data.data,
-          formData: { ...studentForm }
-        }
-      });
-  
-      // 5. 输出关键信息
-      console.log('学生证签发信息:', {
-        vcName: response.data.data.vcName,
-        orgName: response.data.data.orgName,
-        expireTime: response.data.data.expireTime
-      });
-  
-      resetStudentForm();
+      // if (response.data.code !== 1) {
+      //   emit('studentAuthed',"认证失败")
+      //   showNotify({ type: 'warning', message: '认证失败' });
+      //   throw new Error(response.data.msg || '学生证申请失败');
+        
+      // }
     } catch (error) {
       console.error('认证失败:', error.message);
     }

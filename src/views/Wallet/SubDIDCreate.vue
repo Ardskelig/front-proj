@@ -36,6 +36,8 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axios from 'axios'; // 确保已安装axios
+import instance from "@/utils/request.js"
+import { showSuccessToast, showFailToast } from 'vant';
 import { 
     getCurrentRootDID,
     dbCreateSubDID,
@@ -57,8 +59,8 @@ const createSubDID = async () => {
   //用于测试组件传值，暂时注释
   try {
     // 发送创建子DID请求
-    const response = await axios.post(
-      'http://117.72.80.248:9999/api/insider/creSubDid',
+    const response = await instance.post(
+      '/api/insider/creSubDid',
       {
         rootDid: currentRootDid.value.did,
         usage: formData.usage,  // 使用的是 formData 中的值
@@ -69,18 +71,23 @@ const createSubDID = async () => {
     console.log('response:', response);
 
     // 判断响应代码，如果不为 1，表示失败
-    if (response.data.code != 1) {
+    if (response.data.code === 1) {
+        // 成功后，存储数据到数据库
+      await dbCreateSubDID(
+        response.data.map.usage,
+        response.data.data
+      );
+      showSuccessToast(response.data.msg);
+      emit('didCreated',response.data);//触发didCreated事件,通知父组件
+      
+    }else{
+      showFailToast('子DID创建失败');
       throw new Error(response.data.msg || '子DID创建失败');
     }
-    // 成功后，存储数据到数据库
-    await dbCreateSubDID(
-      response.data.map.usage,
-      response.data.data
-    );
-
-    emit('didCreated',response.data);//触发didCreated事件,通知父组件
+    
   } catch (error) {
     // 处理错误并显示失败提示
+    showFailToast('子DID创建失败');
     console.error('创建子DID失败:', error);
 
   }

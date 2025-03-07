@@ -48,7 +48,9 @@ import {
   Field, Picker, Popup, Checkbox, CheckboxGroup,
   Dialog as VanDialog, Form, CellGroup 
 } from 'vant';
+import { showSuccessToast, showFailToast } from 'vant';
 import axios from 'axios';
+import instance from "@/utils/request.js"
 import { 
   getCurrentRootDID,
   updateSubCredential,
@@ -150,8 +152,8 @@ const handleSubStudentAuth = async () => {
 
     // 发送请求
     console.time('[SubStudent] API请求耗时');
-    const response = await axios.post(
-      'http://117.72.80.248:9999/api/insider/getSubStudentCard',
+    const response = await instance.post(
+      '/api/insider/getSubStudentCard',
       postData,
       { 
         timeout: 10000,
@@ -163,7 +165,22 @@ const handleSubStudentAuth = async () => {
     console.debug('响应结果:', response);
 
     // 处理响应
-    if (response.data.code !== 1) {
+    if(response.data.code===1){
+      // 更新凭证
+      await updateSubCredential(props.subDid, {
+        credentialDataStr: response.data.data.credentialDataStr,
+        vcName: response.data.data.vcName,
+        expireTime: response.data.data.expireTime,
+        logo: response.data.data.logo
+      });
+      emit('submitted',1) // 添加事件触发
+      showSuccessToast('子凭证更新完成');
+      console.info('子凭证更新完成');
+
+      console.groupEnd();
+      resetSubStudentForm();
+    }else{
+      showFailToast(`[API错误] ${response.data.msg || '未知错误'}`);
       console.error(`[API错误] ${response.data.msg || '未知错误'}`);
       emit('submitted',0)
       throw new Error(response.data.msg);
@@ -173,19 +190,9 @@ const handleSubStudentAuth = async () => {
     //emit部分可以向父组件传值
     // xkb
     
-    // 更新凭证
-    await updateSubCredential(props.subDid, {
-      credentialDataStr: response.data.data.credentialDataStr,
-      vcName: response.data.data.vcName,
-      expireTime: response.data.data.expireTime,
-      logo: response.data.data.logo
-    });
-    emit('submitted',1) // 添加事件触发
-    console.info('子凭证更新完成');
-
-    console.groupEnd();
-    resetSubStudentForm();
+    
   } catch (error) {
+    showFailToast('[操作异常]', error);
     console.error('[操作异常]', error);
     console.groupEnd();
   }

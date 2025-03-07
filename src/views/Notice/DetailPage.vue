@@ -324,7 +324,7 @@ const uploadSingleFile = async (file, fieldName) => {
     const formdata = new FormData();
     formdata.append('file', file.file);
 
-    const response = await axios.post('http://chaindid.natapp1.cc/api/file/upload', formdata, {
+    const response = await instance.post('/api/file/upload', formdata, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     console.log('上传结果:', response.data);
@@ -389,31 +389,52 @@ const onSubmit = async() => {
   console.log('最终提交数据:', submitData);
   
   // 发送请求
-  axios.post('http://chaindid.natapp1.cc/api/did/getCredential', submitData, {
+  try{
+    const response=await instance.post('/api/did/getCredential', submitData, {
     headers: {
       'Content-Type': 'application/json'
-    }
-  })
-  .then(async response => {
-    showToast('提交成功');
-
-    console.log(response)
-
+    }})
+    if(response.data.code===1){
+      showToast('提交成功');
     // 获取response中的凭证数据，并且存储到indexedDB
     await updateRootCredential(
-        response.data.data.credentialDataStr,
-        response.data.data.vcName,
-        response.data.data.expireTime,
-        response.data.data.logo
-    );
+            response.data.data.credentialDataStr,
+            response.data.data.vcName,
+            response.data.data.expireTime,
+            response.data.data.logo
+        );
 
-    router.push('/Notice');
-    console.log('接口响应:', response.data);
-  })
-  .catch(error => {
+        router.push('/Notice');
+        console.log('接口响应:', response.data);
+    }else{
+      showFailToast('提交失败');
+    }
+  
+  }catch{
     showFailToast('提交失败');
-    console.error('错误详情:', error);
-  });
+  }
+  
+  
+  // .then(async response => {
+  //   showToast('提交成功');
+
+  //   console.log(response)
+
+  //   // 获取response中的凭证数据，并且存储到indexedDB
+  //   await updateRootCredential(
+  //       response.data.data.credentialDataStr,
+  //       response.data.data.vcName,
+  //       response.data.data.expireTime,
+  //       response.data.data.logo
+  //   );
+
+  //   router.push('/Notice');
+  //   console.log('接口响应:', response.data);
+  // })
+  // .catch(error => {
+  //   showFailToast('提交失败');
+  //   console.error('错误详情:', error);
+  // });
 };
 
 
