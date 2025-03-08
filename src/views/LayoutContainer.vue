@@ -1,5 +1,5 @@
 <template>
-  <van-nav-bar :title="pageTitle" fixed="true" placeholder="true"/>
+  <van-nav-bar :title="pageTitle" fixed="true" placeholder="true" class="header"/>
   <router-view />
   <van-tabbar v-model="active">
     <button class="animated-button" @click="goToNotifications">
@@ -137,7 +137,23 @@ const goToWallet = () => {
   opacity: 1;
 }
 
+.header {
+  /* 固定定位让导航栏脱离文档流 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000; /* 设置较高层级确保在最前 */
+  background: white; /* 可选：添加背景色避免透明穿透 */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 可选：添加阴影增强层次感 */
+}
 
+/* 给后续内容区域添加顶部内边距，防止内容被遮挡 */
+.content {
+  padding-top: 60px; /* 值 = 导航栏高度 + 适当间距 */
+  position: relative; /* 创建新的层叠上下文 */
+  z-index: 1; /* 确保内容在默认层级 */
+}
 
 
 
