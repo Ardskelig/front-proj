@@ -4,7 +4,7 @@
     <!-- <van-button plain type="primary" @click="console.log(cards)">点击此处进行学生认证</van-button> -->
 
      <!-- 加载状态 -->
-     <div v-if="loading" class="loading">加载中...</div>
+     <!-- <div v-if="loading" class="loading">加载中...</div> -->
     
     <!-- 错误提示 -->
     <!-- <div v-if="error" class="error">加载失败: {{ error }}</div> -->
@@ -12,23 +12,29 @@
     <div v-for="(card, index) in cards" :key="index" class="card">
       <div class="card-header">
         
-        <span class="did-type" v-if=!card.isRoot>usage:{{ card.usage }}</span>
-        <span class="did-type" v-else>root</span>
+        <span class="did-type" v-if=!card.isRoot>DID-{{ card.usage }}</span>
+        <span class="did-type" v-else>根DID </span>
       </div>
 
       
       <div class="background"></div>
-      <button @click="openStudentAuthForm" v-if="card.isRoot" class="add-box-btn"><van-icon name="plus" />学生认证</button>
+      <button @click="openStudentAuthForm" v-if="card.isRoot" class="add-box-btn"><van-icon name="plus" /></button>
       <button @click="openSubAuthForm(card)" v-else class="add-box-btn" >
-        <van-icon name="plus" />子学生证申请
+        <van-icon name="plus" />
       </button>
       
       <div class="logo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.667 31.69" class="logo-svg">
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.667 31.69" class="logo-svg">
           <path id="Path_6" data-name="Path 6" d="M12.827,1.628A1.561,1.561,0,0,1,14.31,0h2.964a1.561,1.561,0,0,1,1.483,1.628v11.9a9.252,9.252,0,0,1-2.432,6.852q-2.432,2.409-6.963,2.409T2.4,20.452Q0,18.094,0,13.669V1.628A1.561,1.561,0,0,1,1.483,0h2.98A1.561,1.561,0,0,1,5.947,1.628V13.191a5.635,5.635,0,0,0,.85,3.451,3.153,3.153,0,0,0,2.632,1.094,3.032,3.032,0,0,0,2.582-1.076,5.836,5.836,0,0,0,.816-3.486Z" transform="translate(0 0)"></path>
           <path id="Path_7" data-name="Path 7" d="M75.207,20.857a1.561,1.561,0,0,1-1.483,1.628h-2.98a1.561,1.561,0,0,1-1.483-1.628V1.628A1.561,1.561,0,0,1,70.743,0h2.98a1.561,1.561,0,0,1,1.483,1.628Z" transform="translate(-45.91 0)"></path>
           <path id="Path_8" data-name="Path 8" d="M0,80.018A1.561,1.561,0,0,1,1.483,78.39h26.7a1.561,1.561,0,0,1,1.483,1.628v2.006a1.561,1.561,0,0,1-1.483,1.628H1.483A1.561,1.561,0,0,1,0,82.025Z" transform="translate(0 -51.963)"></path>
-        </svg>
+        </svg> -->
+        <img src="../assets/logo1.svg" alt="Logo" style="height: 50px;">
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.667 31.69" class="logo-svg"> -->
+          <!-- <path id="Path_6" data-name="Path 6" d="M12.827,1.628A1.561,1.561,0,0,1,14.31,0h2.964a1.561,1.561,0,0,1,1.483,1.628v11.9a9.252,9.252,0,0,1-2.432,6.852q-2.432,2.409-6.963,2.409T2.4,20.452Q0,18.094,0,13.669V1.628A1.561,1.561,0,0,1,1.483,0h2.98A1.561,1.561,0,0,1,5.947,1.628V13.191a5.635,5.635,0,0,0,.85,3.451,3.153,3.153,0,0,0,2.632,1.094,3.032,3.032,0,0,0,2.582-1.076,5.836,5.836,0,0,0,.816-3.486Z" transform="translate(0 0)"></path> -->
+          <!-- <path id="Path_7" data-name="Path 7" d="M75.207,20.857a1.561,1.561,0,0,1-1.483,1.628h-2.98a1.561,1.561,0,0,1-1.483-1.628V1.628A1.561,1.561,0,0,1,70.743,0h2.98a1.561,1.561,0,0,1,1.483,1.628Z" transform="translate(-45.91 0)"></path> -->
+          <!-- <path id="Path_8" data-name="Path 8" d="M0,80.018A1.561,1.561,0,0,1,1.483,78.39h26.7a1.561,1.561,0,0,1,1.483,1.628v2.006a1.561,1.561,0,0,1-1.483,1.628H1.483A1.561,1.561,0,0,1,0,82.025Z" transform="translate(0 -51.963)"></path> -->
+        <!-- </svg> -->
       </div>
       
       <!-- 动态渲染box内容 -->
@@ -40,7 +46,7 @@
          @click="handleClick(box,card)">
         <div class="box-content">
           <span class="vc-name">{{ box.vcName }}</span>
-          <span class="expire-time">expire-time:{{ formatExpireTime(box.expireTime) }}</span>
+          <span class="expire-time">until: {{ formatExpireTime(box.expireTime) }}</span>
         </div>
       </div>
   
@@ -255,7 +261,7 @@ const handleStudentAuth = async (studentAuthed) => {
     .card-header {
       position: absolute;
       top: 10px;
-      left: 10px;
+      left: 0px;
       z-index: 2;
       /* background: rgba(255, 255, 255, 0.9); */
       padding: 4px 8px;
@@ -277,21 +283,64 @@ const handleStudentAuth = async (studentAuthed) => {
       font-family: monospace;
     }
 
+    /* .add-box-btn {
+      background-color: #7d001f;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 2;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #003333; 
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); 
+    } */
+
     .add-box-btn {
-  background-color: #00ffee;
+      /* 修改核心形状属性 */
+  padding: 12px;           /* 等边距替代原来的 8px 16px */
+  width: 40px;             /* 固定宽度 */
+  height: 40px;            /* 固定高度（与宽度相等） */
+  border-radius: 50%;      /* 关键修改：强制圆形 */
+  /* 新增居中关键代码 */
+  display: flex;           /* 启用弹性布局 */
+  align-items: center;     /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+  box-sizing: border-box;  /* 确保 padding 不撑大按钮 */
+
+  /* 调整字体与边距 */
+  padding: 0;              /* 清除原有 12px 内边距 */
+  font-size: 30px;         /* 保持字体大小 */
+  opacity: 60%;
+  background: linear-gradient(135deg, #eee6e6, #e0dcdc); 
   position: absolute;
   top: 10px;
   right: 10px;
   z-index: 2;
-  padding: 6px 12px;
+  /* padding: 8px 16px; */
   border: none;
-  border-radius: 8px; /* 圆角 */
-  font-size: 14px;
-  font-weight: bold;
-  color: #003333; /* 深色字体提高可读性 */
+  /* border-radius: 12px;  */
+  font-size: 30px;
+  font-weight: 1600;
+  color: white; /* 高对比度文字 */
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4); /* 渐变同色系阴影 */
+}
+
+/* 悬浮动效 */
+.add-box-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+}
+
+/* 点击反馈 */
+.add-box-btn:active {
+  transform: scale(0.98);
 }
 
 .add-box-btn:hover {
@@ -334,16 +383,31 @@ const handleStudentAuth = async (studentAuthed) => {
     transition: all 1s ease-in-out;
   }
 
-  .background {
+  /* .background {
     position: absolute;
     inset: 0;
     background: radial-gradient(circle at 100% 107%, #ff89cc 0%, #9cb8ec 30%, #00ffee 60%, #62c2fe 100%);
+  } */
+
+  .background {
+    position: absolute;
+    inset: 0;
+    /* 新增内容 */
+    background-image: url('../assets/image.jpg'); /* 图片路径示例 */
+    background-size: cover;            /* 覆盖整个容器 */
+    background-position: center;       /* 图片居中显示 */
+    background-repeat: no-repeat;      /* 禁止重复平铺 */
+    opacity: 0.6;                      /* 设置50%透明度 */
+    
+    /* 旧渐变样式（已注释，可删除） */
+    /* background: radial-gradient(...) */
   }
 
   .logo {
     position: absolute;
     right: 50%;
     bottom: 50%;
+    opacity: 20%;
     transform: translate(50%, 50%);
     transition: all 0.6s ease-in-out;
   }
@@ -352,6 +416,7 @@ const handleStudentAuth = async (studentAuthed) => {
     fill: white;
     width: 30px;
     height: 30px;
+    
   }
 
   .icon {
@@ -399,9 +464,9 @@ const handleStudentAuth = async (studentAuthed) => {
     left: -70%;
   }
 
-  .box1::before {
+  /* .box1::before {
     background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #ff53d4 60%, #62c2fe 90%);
-  }
+  } */
 
   .box1:hover::before {
     opacity: 1;
@@ -419,9 +484,9 @@ const handleStudentAuth = async (studentAuthed) => {
     transition-delay: 0.2s;
   }
 
-  .box2::before {
+  /* .box2::before {
     background: radial-gradient(circle at 30% 107%, #91e9ff 0%, #00ACEE 90%);
-  }
+  } */
 
   .box2:hover::before {
     opacity: 1;
@@ -439,9 +504,9 @@ const handleStudentAuth = async (studentAuthed) => {
     transition-delay: 0.4s;
   }
 
-  .box3::before {
+  /* .box3::before {
     background: radial-gradient(circle at 30% 107%, #969fff 0%, #b349ff 90%);
-  }
+  } */
 
   .box3:hover::before {
     opacity: 1;
@@ -463,7 +528,8 @@ const handleStudentAuth = async (studentAuthed) => {
   font-size: 14px;
   font-weight: 600;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  color: #24A9B8;
+  /* color: #24A9B8; */
+  color: #050505;
   line-height: 1.2;
   display: -webkit-box;
   /* -webkit-line-clamp: 2; */
@@ -475,8 +541,9 @@ const handleStudentAuth = async (studentAuthed) => {
 .expire-time {
   font-size: 12px;
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-  color: #A4B4E9;
-  font-weight: 300;
+  /* color: #A4B4E9; */
+  color: #020202; 
+  font-weight: 700;
   position: relative;
   padding-left: 18px;
 }
@@ -494,12 +561,13 @@ const handleStudentAuth = async (studentAuthed) => {
     transform: translate(0, 0);
     bottom: 20px;
     right: 20px;
+    opacity: 70%;
   }
 
   .add-card-btn {
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #E594D3;
+    background-color: #e5e5e5;
     color: white;
     border: none;
     border-radius: 5px;
@@ -508,12 +576,13 @@ const handleStudentAuth = async (studentAuthed) => {
   }
 
   .add-card-btn:hover {
-    background-color: #E594D3;
+    background-color: #e5e5e5;
   }
 
 
   /* 新增弹窗样式 */
 .dialog-content {
+  
   padding: 20px;
   text-align: center;
 }
@@ -526,6 +595,7 @@ const handleStudentAuth = async (studentAuthed) => {
 }
 
 .box-info {
+  
   font-size: 14px;
   line-height: 1.6;
   padding: 0 15px;
@@ -557,10 +627,10 @@ const handleStudentAuth = async (studentAuthed) => {
   }
 }
 
-.loading {
+/* .loading {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 240px; /* 确保与二维码相同大小 */
-}
+  height: 240px; 
+} */
 </style>
