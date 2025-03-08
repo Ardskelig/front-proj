@@ -14,10 +14,10 @@
     </button>
   </van-tabbar> -->
   <van-tabbar v-model="active">
-  <van-tabbar-item name="notice" icon="comment-o" @click="goToNotifications">通知</van-tabbar-item>
-  <van-tabbar-item icon="scan" @click="goToScan">扫描</van-tabbar-item>
+  <van-tabbar-item replace to="/Notice" name="notice" icon="comment-o" >通知</van-tabbar-item>
+  <van-tabbar-item replace to="/qr-scanner" icon="scan" >扫描</van-tabbar-item>
   <!-- <van-tabbar-item name="friends" icon="friends-o">标签</van-tabbar-item> -->
-  <van-tabbar-item name="wallet" icon="ecard-pay" @click="goToWallet">钱包</van-tabbar-item>
+  <van-tabbar-item replace to="/Wallet" name="wallet" icon="ecard-pay" >钱包</van-tabbar-item>
 </van-tabbar> 
 
   
@@ -72,6 +72,9 @@ const goToWallet = () => {
   
   /* 悬停效果 */
   --van-nav-bar-icon-active-color: rgba(255,255,255,0.6);
+
+  --van-tabbar-item-icon-size:26px;
+  --van-tabbar-height:50px
 }
 
 </style>
