@@ -9,7 +9,7 @@
         fixed="true"
         placeholder="true"
       />
-      <button @click="testData">点击查看formData</button>
+      <!-- <button @click="testData">点击查看formData</button> -->
   
       <!-- 内容区域 -->
       <div v-if="loading" class="loading-wrapper">
@@ -36,7 +36,7 @@
             <van-grid-item
               v-for="(img, index) in filteredImages"
               :key="index"
-              @click="showImagePreview(filteredImages, index)"
+              @click="showImagePreview2(filteredImages, index)"
             >
               <van-image :src="img" height="100" fit="cover" />
             </van-grid-item>
@@ -145,7 +145,7 @@
   import { useRoute, useRouter } from 'vue-router'
   import { showToast, showFailToast } from 'vant';
   import axios from 'axios'
-  import { ImagePreview } from 'vant'
+  import { showImagePreview } from 'vant';
   import instance from '@/utils/request.js'
   
   const route = useRoute()
@@ -196,12 +196,13 @@
   })
   
   // 图片预览
-  const showImagePreview = (images, index) => {
-    ImagePreview.show({
-      images,
-      startPosition: index,
-      closeable: true
-    })
+  const showImagePreview2 = (images, index) => {
+    showImagePreview(images)
+    // ImagePreview.show({
+    //   images,
+    //   startPosition: index,
+    //   closeable: true
+    // })
   }
 
 
