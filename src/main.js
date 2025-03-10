@@ -48,6 +48,7 @@ import { Calendar } from 'vant';
 import { initDB, initRootDID } from './db.js';
 import VueQrcode from 'vue-qrcode'
 import { Picker } from 'vant';
+import { Tag } from 'vant';
 const startApp = async () => {
   try {
     await initDB()
@@ -98,6 +99,7 @@ const startApp = async () => {
     app.use(router)
     app.use(ElementPlus)
     app.use(Picker);
+    app.use(Tag);
     app.use(Cascader);   
     for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
       app.component(key, component)

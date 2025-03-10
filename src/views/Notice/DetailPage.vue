@@ -52,7 +52,12 @@
 
         <!-- 表单信息 -->
         <div class="form-section">
-          <van-cell title="表单信息" />
+          <van-cell >
+            <!-- 使用 title 插槽来自定义标题 -->
+            <template #title>
+              <span class="custom-title" style="font-family: Arial, Helvetica, sans-serif;font-size: medium;font-weight: bold;">问卷详情</span>
+            </template>
+          </van-cell>
           <van-form @submit="onSubmit">
             <div v-for="(item, index) in queryContent" :key="index">
               <!-- 下拉选择 -->
@@ -142,6 +147,7 @@
       </div>
       </template>
     </div>
+
   </template>
   
   <script setup>
@@ -476,7 +482,13 @@ const testData=()=>{
 }
 
 .form-section {
-  padding: 5px;
+  height: auto;
+  padding: 16px;
+  margin-bottom: 0;
+  background-color: #f5f7fa; /* 浅色背景 */
+}
+.body {
+  background-color: #f5f7fa
 }
   </style>
   
