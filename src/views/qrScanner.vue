@@ -18,7 +18,7 @@
             <qrcode-stream
                 class="custom-stream" 
                 :paint-size="300"     
-                constraints="selectedConstraints"
+                :constraints="selectedConstraints"
                 @detect="onDecode"
                 @camera-on="onCameraReady"
                 @error="onError"
@@ -84,6 +84,9 @@ export default {
     const onCameraReady = (res) => {
       console.log("摄像头准备好了");
     };
+    // 用于选择相机
+    // environment后置摄像头，user前置摄像头
+    const selectedConstraints = ref({ facingMode: 'environment' })
     const onError = (error) => {
       if (error.name === "NotAllowedError") {
         // user denied camera access permission
@@ -133,6 +136,7 @@ export default {
       goback,
       onDecode,
       onError,
+      selectedConstraints
     };
   },
 };
