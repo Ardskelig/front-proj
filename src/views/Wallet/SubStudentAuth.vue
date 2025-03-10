@@ -32,9 +32,15 @@
 
         <!-- 选项复选框 -->
         <van-checkbox-group v-model="subStudentForm.options">
-          <van-checkbox name="enrollment">学籍信息</van-checkbox>
+          <van-checkbox name="name">学生姓名</van-checkbox>
+          <van-checkbox name="gender">性别信息</van-checkbox>
+          <van-checkbox name="nation">民族信息</van-checkbox>
+          <van-checkbox name="idNum">身份证号</van-checkbox>
+          <van-checkbox name="enrollment">入学年份</van-checkbox>
+          <van-checkbox name="duration">学制信息</van-checkbox>
           <van-checkbox name="faculty">院系信息</van-checkbox>
           <van-checkbox name="majority">专业信息</van-checkbox>
+          <van-checkbox name="class">班级信息</van-checkbox>
         </van-checkbox-group>
       </van-cell-group>
     </van-form>
