@@ -14,7 +14,9 @@
       <div v-if="loading" class="loading-wrapper">
         <van-loading size="24px">加载中...</van-loading>
       </div>
-  
+      <div v-else-if="isNone" style="text-align: center;">
+        无内容
+      </div>
       <template v-else>
         <!-- 标题 -->
          <div class="detail-container">
@@ -150,12 +152,13 @@
   import { showImagePreview } from 'vant';
   import instance from '@/utils/request.js'
   
+  const isNone=ref(true)
   const route = useRoute()
   const router = useRouter()
   
   // 响应式数据
   const loading = ref(true)
-  const detailData = ref({})
+  const detailData = ref(null)
   const errorMessage = ref('')
   const { queryId, blogId } = route.params
 
@@ -184,12 +187,15 @@
       if (response.data.code === 1) {
         detailData.value = response.data.data || {}
         queryContent.value=response.data.data.result
+        isNone.value=false
         // console.log('问卷渲染数据',queryContent.value)
         // showPicker.value = new Array(queryContent.value.length).fill(false);
       } else {
+        showFailToast(response.data.msg)
         throw new Error(response.data.msg || '详情获取失败')
       }
     } catch (err) {
+      showFailToast("加载失败",err)
       errorMessage.value = `加载失败: ${err.message}`
     } finally {
       loading.value = false
@@ -216,52 +222,7 @@ const formData = ref({});
 const fileList = ref({}); // 专门处理文件上传列表
 
 //问卷渲染内容
-const queryContent=ref([
-    {
-        "options": null,
-        "type": "单行文本",
-        "title": "姓名",
-        "required": true
-    },
-    {
-        "options": null,
-        "type": "多行文本",
-        "title": "自我介绍",
-        "required": true
-    },
-    {
-        "options": [
-            "教师",
-            "学生",
-            "工人"
-        ],
-        "type": "下拉选择",
-        "title": "职业",
-        "required": true
-    },
-    {
-        "options": [
-            "计算机",
-            "数学",
-            "物理"
-        ],
-        "type": "下拉选择",
-        "title": "专业",
-        "required": true
-    },
-    {
-        "options": null,
-        "type": "文件上传",
-        "title": "证件上传",
-        "required": true
-    },
-    {
-        "options": null,
-        "type": "日期选择",
-        "title": "日期",
-        "required": true
-    }
-])
+const queryContent=ref('')
 
 
 // 选择器相关
@@ -340,12 +301,12 @@ const uploadSingleFile = async (file, fieldName) => {
       return response.data.data;
     } else {
       file.status = 'failed';
-      showFailToast('上传失败1231');
+      showFailToast('上传失败');
     }
   } catch (error) {
     console.log(error)
     file.status = 'failed';
-    showFailToast('上传失败0000');
+    showFailToast('上传失败');
   }
 };
 
@@ -514,6 +475,8 @@ const testData=()=>{
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-
+.form-section {
+  padding: 5px;
+}
   </style>
   

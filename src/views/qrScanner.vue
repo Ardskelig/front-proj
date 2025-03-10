@@ -27,27 +27,35 @@
             <div class="scan-border"></div>
         </div>
     </div>
-    <div>扫描&核验凭证</div>
+    <div style="text-align: center;">扫描&核验凭证</div>
   
   </div>
   <van-dialog
   v-model:show="showDialog"
-  title="扫码结果"
+  title="核验结果"
   show-cancel-button
   @confirm="showDialog = false"
 >
   <div class="dialog-content">
-    <van-cell-group v-if="dialogData?.map">
+    <van-cell-group v-if="dialogData">
       <!-- 保留固定的验证结果 -->
-      <van-cell title="验证结果" :value="dialogData.msg" />
+      <!-- <van-cell title="验证结果"  /> -->
       
       <!-- 动态渲染map内容 -->
-      <van-cell 
-        v-for="(value, key) in dialogData.map"
-        :key="key"
-        :title="formatKey(key)"
-        :value="value"
-      />
+       <!-- 优先显示name字段 -->
+       <van-cell 
+         v-if="orderedFields[0]"
+         :title="formatKey(orderedFields[0].key)"
+         :value="orderedFields[0].value"
+       />
+
+       <!-- 显示剩余字段 -->
+       <van-cell
+         v-for="item in orderedFields.slice(1)"
+         :key="item.key"
+         :title="formatKey(item.key)"
+         :value="item.value"
+       />
     </van-cell-group>
     
     <div v-else class="no-data" styl="margin:5px">
@@ -61,7 +69,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref, onMounted,computed } from "vue";
 import { useRouter } from "vue-router";
 import { QrcodeStream } from "vue-qrcode-reader";
 import { showSuccessToast, showFailToast } from 'vant';
@@ -73,10 +81,28 @@ export default {
     showToast,
   },
   setup() {
-    const dialogData = ref(null);
+    const dialogData = ref('');
     const testVice = reactive([]);
     const router = useRouter();
     const showDialog=ref(false)
+    const formatKey = (key) => {
+      const keyMap = {
+        'name': '姓名',
+        'idNum':'身份证号',
+        'enrollment': '入学年份',
+        'duration':'学制',
+        'faculty':'学院',
+        'majority':'专业',
+        'class':'班级',
+        'gender': '性别',
+        'did': '数字身份',
+        'issuerDid': '颁发机构',
+        'timestamp': '时间戳',
+        'nation':'民族'
+        // 可继续添加其他字段映射
+      }
+      return keyMap[key] || key
+    }
     const sendToBackend=async (qrString)=>{
       try{
         console.log("发送至后端：",qrString)
@@ -94,7 +120,7 @@ export default {
         })
         console.log("返回结果：",response)
         if(response.data.code==1){
-          
+          console.log('******************')
           dialogData.value = response.data.map;
           console.log("内容：",dialogData.value)
           showDialog.value = true;
@@ -107,6 +133,26 @@ export default {
         showFailToast("111111111111二维码有误！");
       }
     }
+    const orderedFields = computed(() => {
+      if (!dialogData.value) return []
+
+      // 把字段转换为数组
+      const fields = Object.entries(dialogData.value)
+        .map(([key, value]) => ({ key, value }))
+
+      // 查找name字段的索引
+      const nameIndex = fields.findIndex(item => item.key === 'name')
+
+      // 如果存在name字段且不在第一位
+      if (nameIndex > 0) {
+        // 取出name字段
+        const nameItem = fields.splice(nameIndex, 1)[0]
+        // 插入到数组开头
+        fields.unshift(nameItem)
+      }
+    
+      return fields
+    })
     // 扫码成功后的回调
     const onDecode = (detectedCodes) => {
       // alert("成功扫描到二维码")
@@ -173,7 +219,9 @@ export default {
       goback,
       onDecode,
       onError,
+      formatKey,
       selectedConstraints,
+      orderedFields,
       showDialog, // 必须返回才能被模板访问
       dialogData  // 必须返回才能被模板访问
     };
@@ -271,4 +319,13 @@ const selectedConstraints = ref({ facingMode: 'environment' })
   white-space: pre-wrap;
   word-break: break-all;
 } 
+/* 添加单元格样式优化 */
+.van-cell__title {
+  min-width: 80px;
+}
+.van-cell__value {
+  text-align: right;
+  color: #666;
+}
+
 </style>
