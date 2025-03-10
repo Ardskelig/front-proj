@@ -27,8 +27,37 @@
             <div class="scan-border"></div>
         </div>
     </div>
+    <div>扫描&核验凭证</div>
   
   </div>
+  <van-dialog
+  v-model:show="showDialog"
+  title="扫码结果"
+  show-cancel-button
+  @confirm="showDialog = false"
+>
+  <div class="dialog-content">
+    <van-cell-group v-if="dialogData?.map">
+      <!-- 保留固定的验证结果 -->
+      <van-cell title="验证结果" :value="dialogData.msg" />
+      
+      <!-- 动态渲染map内容 -->
+      <van-cell 
+        v-for="(value, key) in dialogData.map"
+        :key="key"
+        :title="formatKey(key)"
+        :value="value"
+      />
+    </van-cell-group>
+    
+    <div v-else class="no-data" styl="margin:5px">
+      <van-cell-group inset>
+        <van-cell title="暂无核验信息" />
+      </van-cell-group>
+    </div>
+  </div>
+</van-dialog>
+
 </template>
 
 <script>
@@ -44,8 +73,10 @@ export default {
     showToast,
   },
   setup() {
+    const dialogData = ref(null);
     const testVice = reactive([]);
     const router = useRouter();
+    const showDialog=ref(false)
     const sendToBackend=async (qrString)=>{
       try{
         console.log("发送至后端：",qrString)
@@ -61,13 +92,19 @@ export default {
             "Content-Type":"application/json"
           }
         })
+        console.log("返回结果：",response)
         if(response.data.code==1){
+          
+          dialogData.value = response.data.map;
+          console.log("内容：",dialogData.value)
+          showDialog.value = true;
+          console.log(showDialog.value)
           showSuccessToast(response.data.msg);
         }else{
           showFailToast(response.data.msg);
         }
       }catch{
-        showFailToast("二维码有误！");
+        showFailToast("111111111111二维码有误！");
       }
     }
     // 扫码成功后的回调
@@ -86,7 +123,7 @@ export default {
     };
     // 用于选择相机
     // environment后置摄像头，user前置摄像头
-    const selectedConstraints = ref({ facingMode: 'environment' })
+    const selectedConstraints = ref({ facingMode: 'user' })
     const onError = (error) => {
       if (error.name === "NotAllowedError") {
         // user denied camera access permission
@@ -136,7 +173,9 @@ export default {
       goback,
       onDecode,
       onError,
-      selectedConstraints
+      selectedConstraints,
+      showDialog, // 必须返回才能被模板访问
+      dialogData  // 必须返回才能被模板访问
     };
   },
 };
@@ -226,5 +265,10 @@ const selectedConstraints = ref({ facingMode: 'environment' })
     }
     }
 
+
 }
+.wrap-text {
+  white-space: pre-wrap;
+  word-break: break-all;
+} 
 </style>

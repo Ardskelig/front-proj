@@ -9,8 +9,8 @@ export default defineConfig({
   server:{
     proxy:{
       "/api":{
-        target:"http://117.72.80.248:9999",
-        // target:"http://chaindid.natapp1.cc",
+        // target:"http://117.72.80.248:9999",
+        target:"http://chaindid.natapp1.cc",
         changeOrigin:true,
       }
     }

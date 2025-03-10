@@ -15,7 +15,7 @@
   </van-tabbar> -->
   <van-tabbar v-model="active">
   <van-tabbar-item replace to="/Notice" name="notice" icon="comment-o" >通知</van-tabbar-item>
-  <van-tabbar-item replace to="/qr-scanner" icon="scan" >扫描</van-tabbar-item>
+  <van-tabbar-item replace to="/qr-scanner" name="scan" icon="scan" >扫描</van-tabbar-item>
   <!-- <van-tabbar-item name="friends" icon="friends-o">标签</van-tabbar-item> -->
   <van-tabbar-item replace to="/Wallet" name="wallet" icon="ecard-pay" >钱包</van-tabbar-item>
 </van-tabbar> 
@@ -24,12 +24,30 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref,watch } from 'vue';
 import { useRoute, useRouter} from 'vue-router'
 import { computed } from 'vue'
 const route = useRoute()
 const active = ref("notice");
 const router=useRouter();
+
+// 路由到名称的映射
+const routeMap = {
+  '/Notice': 'notice',
+  '/qr-scanner': 'scan',
+  '/Wallet': 'wallet'
+}
+
+// 初始化时设置 active
+active.value = routeMap[route.path] || 'notice'
+
+// 监听路由变化
+watch(
+  () => route.path,
+  (newPath) => {
+    active.value = routeMap[newPath] || 'notice'
+  }
+)
 
 // 动态计算页面标题
 const pageTitle = computed(() => {

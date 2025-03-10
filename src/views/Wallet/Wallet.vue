@@ -567,7 +567,7 @@ const handleStudentAuth = async (studentAuthed) => {
   .add-card-btn {
     margin-top: 20px;
     padding: 10px 20px;
-    background-color: #e5e5e5;
+    background-color: #87909B;
     color: white;
     border: none;
     border-radius: 5px;
@@ -576,7 +576,7 @@ const handleStudentAuth = async (studentAuthed) => {
   }
 
   .add-card-btn:hover {
-    background-color: #e5e5e5;
+    background-color: #BEC4C6;
   }
 
 

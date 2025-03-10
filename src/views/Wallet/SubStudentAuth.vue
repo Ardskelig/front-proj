@@ -7,42 +7,22 @@
     @confirm="handleSubStudentAuth"
     @cancel="resetSubStudentForm"
   >
-  <!-- <button @click="console.log(props.subDid)">打印传过来的子did</button> -->
     <van-form ref="formRef">
-      <van-cell-group inset>
-        
-        <!-- <van-field
-          v-model="subStudentForm.did"
-          readonly
-          clickable
-          name="did"
-          label="选择子DID"
-          :rules="[{ required: true, message: '必须选择子DID' }]"
-          @click="showPicker = true"
-        />
-
-        
-        <van-popup v-model:show="showPicker" round position="bottom">
-          <van-picker
-            :columns="subDIDOptions"
-            @cancel="showPicker = false"
-            @confirm="onPickerConfirm"
-          />
-        </van-popup> -->
-
-        <!-- 选项复选框 -->
-        <van-checkbox-group v-model="subStudentForm.options">
-          <van-checkbox name="name">学生姓名</van-checkbox>
-          <van-checkbox name="gender">性别信息</van-checkbox>
-          <van-checkbox name="nation">民族信息</van-checkbox>
-          <van-checkbox name="idNum">身份证号</van-checkbox>
-          <van-checkbox name="enrollment">入学年份</van-checkbox>
-          <van-checkbox name="duration">学制信息</van-checkbox>
-          <van-checkbox name="faculty">院系信息</van-checkbox>
-          <van-checkbox name="majority">专业信息</van-checkbox>
-          <van-checkbox name="class">班级信息</van-checkbox>
-        </van-checkbox-group>
-      </van-cell-group>
+      <van-checkbox-group v-model="subStudentForm.options">
+        <van-cell-group inset>
+          <van-cell 
+            v-for="item in optionsList" 
+            :key="item.name"
+            :title="item.label"
+            clickable
+            @click="toggleOption(item.name)"
+          >
+            <template #right-icon>
+              <van-checkbox :name="item.name" @click.stop/>
+            </template>
+          </van-cell>
+        </van-cell-group>
+      </van-checkbox-group>
     </van-form>
   </van-dialog>
 </template>
@@ -215,4 +195,27 @@ const resetSubStudentForm = () => {
 defineExpose({
   showSubStudentForm 
 })
+
+// 选项配置数据
+const optionsList = [
+  { name: 'name', label: '学生姓名' },
+  { name: 'gender', label: '性别信息' },
+  { name: 'nation', label: '民族信息' },
+  { name: 'idNum', label: '身份证号' },
+  { name: 'enrollment', label: '入学年份' },
+  { name: 'duration', label: '学制信息' },
+  { name: 'faculty', label: '院系信息' },
+  { name: 'majority', label: '专业信息' },
+  { name: 'class', label: '班级信息' }
+]
+
+// 切换选项方法
+const toggleOption = (name) => {
+  const index = subStudentForm.options.indexOf(name)
+  if (index > -1) {
+    subStudentForm.options.splice(index, 1)
+  } else {
+    subStudentForm.options.push(name)
+  }
+}
 </script>

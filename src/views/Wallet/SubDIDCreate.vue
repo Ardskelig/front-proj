@@ -77,7 +77,7 @@ const createSubDID = async () => {
         response.data.map.usage,
         response.data.data
       );
-      showSuccessToast(response.data.msg);
+      showSuccessToast('子DID创建成功');
       emit('didCreated',response.data);//触发didCreated事件,通知父组件
       
     }else{
